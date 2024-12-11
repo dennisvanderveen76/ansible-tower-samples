@@ -13,6 +13,7 @@
         permanent: true
         state: enabled
         immediate: true
+        offline: true
     - name: Enable httpd service
       ansible.builtin.service:
         name: httpd
