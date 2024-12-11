@@ -1,0 +1,23 @@
+---
+- name: This is a sample playbook to install httpd service
+  hosts: rhel.shared
+  become: true
+  tasks:
+    - name: Install httpd service
+      ansible.builtin.package:
+        name: httpd
+        state: present
+    - name: Open firewall ports
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+    - name: Enable httpd service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+    - name: Create a default page
+      ansible.builtin.copy:
+        content: "<h1>Hello world</h1>\n"
+        dest: /var/www/html/index.html
