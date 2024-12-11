@@ -1,0 +1,7 @@
+---
+- name: Site is up
+  hosts: rhel.shared
+  gather_facts: false
+  tasks:
+    - debug:
+        msg: "All is up and well"
