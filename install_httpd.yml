@@ -13,7 +13,11 @@
         permanent: true
         state: enabled
         immediate: true
-        offline: true
+    - name: Open firewall ports
+      ansible.posix.firewalld:
+        service: http
+        state: enabled
+        immediate: true
     - name: Enable httpd service
       ansible.builtin.service:
         name: httpd
