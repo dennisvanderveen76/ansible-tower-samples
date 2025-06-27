@@ -3,5 +3,6 @@
   hosts: rhel.shared
   gather_facts: false
   tasks:
-    - debug:
+    - name: Msg all is up and running
+      ansible.builtin.debug:
         msg: "All is up and well"

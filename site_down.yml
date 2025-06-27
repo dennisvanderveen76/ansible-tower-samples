@@ -15,6 +15,6 @@
         immediate: yes
 
     - name: "Restart apache webserver"
-      service:
+      ansible.builtin.service:
         name: httpd
         state: restarted
