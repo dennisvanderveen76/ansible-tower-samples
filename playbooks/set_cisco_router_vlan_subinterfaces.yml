@@ -1,0 +1,23 @@
+---
+- name: Manage VLAN subinterfaces on routers
+  hosts: cisco_ios_routers
+  tasks:
+    - name: Configure router VLAN subinterfaces
+      cisco.ios.ios_config:
+        # use the template to generate the CLI config lines for each VLAN subinterface
+        # split it into lines and ignore empty lines before feeding it to ios_config
+        lines: "{{ lookup('template', 'cisco_router_vlan_subinterface_config.j2').splitlines() | select() }}"
+        parents: "interface Ethernet0/1.{{ vlan.vlan_id }}"
+        defaults: true # to get all Cisco IOS defaults (show run all)
+      loop: "{{ vlan_definitions }}"
+      loop_control:
+        loop_var: vlan
+      register: config_changes
+
+    - name: Display executed commands
+      ansible.builtin.debug:
+        msg: "commands: {{ item.commands }}"
+      loop: "{{ config_changes.results }}"
+      when: item.changed # noqa: no-handler
+      loop_control:
+        label: "VLAN {{ item.vlan.vlan_id }} {{ item.vlan.name }}"

@@ -1,0 +1,32 @@
+---
+ansible_host: 192.168.64.43
+
+interfaces:
+  Ethernet0/0:
+    description: Management
+    mode: access
+    vlan: 1
+  Ethernet0/1:
+    description: Uplink to R1
+    mode: trunk
+  Ethernet0/2:
+    mode: shutdown
+  Ethernet0/3:
+    description: Uplink to S2
+    mode: trunk
+  Ethernet1/0:
+    description: PC
+    mode: access
+    vlan: 10
+  Ethernet1/1:
+    description: PC
+    mode: access
+    vlan: 10
+  Ethernet1/2:
+    description: Phone
+    mode: access
+    vlan: 20
+  Ethernet1/3:
+    description: Phone
+    mode: access
+    vlan: 20

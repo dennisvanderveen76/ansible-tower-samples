@@ -1,0 +1,4 @@
+{
+    "ansible.python.interpreterPath": "/home/ron/Documents/demo-ansible-cml-iol/.venv/bin/python",
+    "better-yaml.indentSeq": true
+}

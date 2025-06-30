@@ -1,0 +1,41 @@
+---
+- name: Manage VLAN DHCP on routers
+  hosts: cisco_ios_routers
+  tasks:
+    - name: Configure router VLAN DHCP excluded addresses
+      cisco.ios.ios_config:
+        # use the template to generate the CLI config lines for each VLAN subinterface
+        # split it into lines and ignore empty lines before feeding it to ios_config
+        lines: "{{ lookup('template', 'cisco_router_vlan_dhcp_excluded_config.j2').splitlines() | select() }}"
+      loop: "{{ vlan_definitions }}"
+      loop_control:
+        loop_var: vlan
+      register: config_changes_excluded
+
+    - name: Display executed commands for excluded addresses
+      ansible.builtin.debug:
+        msg: "commands: {{ item.commands }}"
+      loop: "{{ config_changes_excluded.results }}"
+      when: item.changed # noqa: no-handler
+      loop_control:
+        label: "VLAN {{ item.vlan.vlan_id }} {{ item.vlan.name }}"
+
+    - name: Configure router VLAN DHCP pool
+      cisco.ios.ios_config:
+        # use the template to generate the CLI config lines for each VLAN subinterface
+        # split it into lines and ignore empty lines before feeding it to ios_config
+        lines: "{{ lookup('template', 'cisco_router_vlan_dhcp_pool_config.j2').splitlines() | select() }}"
+        parents: "ip dhcp pool VLAN{{ vlan.vlan_id }}_{{ vlan.name }}_POOL"
+        defaults: true # to get all Cisco IOS defaults (show run all)
+      loop: "{{ vlan_definitions }}"
+      loop_control:
+        loop_var: vlan
+      register: config_changes_pools
+
+    - name: Display executed commands for pools
+      ansible.builtin.debug:
+        msg: "commands: {{ item.commands }}"
+      loop: "{{ config_changes_pools.results }}"
+      when: item.changed # noqa: no-handler
+      loop_control:
+        label: "VLAN {{ item.vlan.vlan_id }} {{ item.vlan.name }}"

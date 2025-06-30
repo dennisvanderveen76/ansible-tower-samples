@@ -1,0 +1,23 @@
+---
+- name: Manage ports on switches
+  hosts: cisco_ios_switches
+  tasks:
+    - name: Configure switch interfaces
+      cisco.ios.ios_config:
+        # use the template to generate the CLI config lines for each interface
+        # split it into lines and ignore empty lines before feeding it to ios_config
+        lines: "{{ lookup('template', 'cisco_switch_interface_config.j2').splitlines() | select() }}"
+        parents: "interface {{ interface_name }}"
+        defaults: true # to get all Cisco IOS defaults (show run all)
+      loop: "{{ interfaces.keys() }}"
+      loop_control:
+        loop_var: interface_name
+      register: config_changes
+
+    - name: Display executed commands
+      ansible.builtin.debug:
+        msg: "commands: {{ item.commands }}"
+      loop: "{{ config_changes.results }}"
+      when: item.changed # noqa: no-handler
+      loop_control:
+        label: "{{ item.interface_name }}"

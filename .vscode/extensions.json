@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "ms-python.debugpy",
+        "ms-python.vscode-pylance",	
+        "ms-vscode-remote.vscode-remote-extensionpack",
+        "redhat.ansible",
+        "jborean.ansibug",
+        "kennylong.kubernetes-yaml-formatter",
+        "dotjoshjohnson.xml",
+    ]
+}

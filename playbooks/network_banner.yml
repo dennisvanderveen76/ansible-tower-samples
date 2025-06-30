@@ -1,0 +1,14 @@
+---
+- name: Set router banners
+  hosts: cisco_ios
+  gather_facts: false
+
+  tasks:
+    - name: Load banner onto network device
+      cisco.ios.ios_banner:
+        banner: login
+        text: |
+          this is my login banner
+          that contains a multiline
+          string
+        state: present

@@ -1,0 +1,7 @@
+{# Renders the 'config' input for cisco.ios.ios_vlans #}
+---
+{% for entry in vlan_definitions %}
+- name: {{ entry.name }}
+  vlan_id: {{ entry.vlan_id }}
+  shutdown: disabled
+{% endfor %}

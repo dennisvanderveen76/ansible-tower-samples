@@ -1,0 +1,13 @@
+{# 
+Renders the Cisco CLI config lines for a VLAN DHCP pool to split the subnet across both routers
+-   .1 to  .49 reserved for network and servers
+-  .50 to .149 assigned by R1 
+- .150 to .254 assigned by R2
+#}
+{% set subnet_prefix = vlan.subnet_ip.removesuffix('.0') %}
+{% if inventory_hostname == 'R1' %}
+ip dhcp excluded-address {{ subnet_prefix }}.1 {{ subnet_prefix }}.49
+ip dhcp excluded-address {{ subnet_prefix }}.149 {{ subnet_prefix }}.254
+{% else %}
+ip dhcp excluded-address {{ subnet_prefix }}.1 {{ subnet_prefix }}.149
+{% endif %}

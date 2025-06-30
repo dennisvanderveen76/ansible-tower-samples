@@ -1,0 +1,11 @@
+---
+cisco_ios:
+  children:
+    cisco_ios_routers:
+      hosts:
+        R1:
+        R2:
+    cisco_ios_switches:
+      hosts:
+        S1:
+        S2:

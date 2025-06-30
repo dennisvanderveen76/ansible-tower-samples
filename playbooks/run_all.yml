@@ -1,0 +1,7 @@
+---
+- import_playbook: show_cisco_devices_info.yml
+- import_playbook: set_cisco_hostnames.yml
+- import_playbook: set_cisco_router_vlan_subinterfaces.yml
+- import_playbook: set_cisco_router_vlan_dhcp.yml
+- import_playbook: set_cisco_switch_vlans.yml
+- import_playbook: set_cisco_switch_interfaces.yml

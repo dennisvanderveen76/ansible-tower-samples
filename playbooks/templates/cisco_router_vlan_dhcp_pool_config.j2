@@ -1,0 +1,5 @@
+{# Renders the Cisco CLI config lines for a VLAN DHCP pools #}
+network {{ vlan.subnet_ip}} {{ vlan.subnet_mask}}
+default-router {{ vlan.gateway_ip.VRRP }}
+dns-server 8.8.8.8 8.8.4.4
+domain-name {{ vlan.name.lower() }}.test

@@ -1,0 +1,6 @@
+{# Renders the Cisco CLI config lines for a VLAN subinterface #}
+description VLAN {{ vlan.vlan_id }} {{ vlan.name }}
+encapsulation dot1Q {{ vlan.vlan_id }}
+ip address {{ vlan.gateway_ip[inventory_hostname] }} {{ vlan.subnet_mask }}
+vrrp {{ vlan.vlan_id }} ip {{ vlan.gateway_ip.VRRP }}
+vrrp {{ vlan.vlan_id }} priority {% if inventory_hostname == 'R1' %}150{% else %}100{% endif %}

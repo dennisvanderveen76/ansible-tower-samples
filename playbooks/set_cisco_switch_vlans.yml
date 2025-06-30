@@ -1,0 +1,14 @@
+---
+- name: Manage VLANs on switches
+  hosts: cisco_ios_switches
+  tasks:
+    - name: Make sure the VLANs exist
+      cisco.ios.ios_vlans:
+        config: "{{ lookup('template', 'cisco_switch_vlans_config.j2') | from_yaml }}"
+        state: merged
+      register: config_changes
+
+    - name: Display executed commands
+      when: config_changes.commands
+      ansible.builtin.debug:
+        msg: "{{ config_changes.commands }}"

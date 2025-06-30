@@ -1,0 +1,14 @@
+---
+- name: Set hostname on Cisco IOS devices
+  hosts: cisco_ios
+  tasks:
+    - name: Set hostname
+      cisco.ios.ios_hostname:
+        config:
+          hostname: "{{ inventory_hostname }}"
+      register: config_changes
+
+    - name: Display executed commands
+      when: config_changes.commands
+      ansible.builtin.debug:
+        msg: "{{ config_changes.commands }}"
