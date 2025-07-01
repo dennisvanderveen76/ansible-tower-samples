@@ -66,9 +66,12 @@
     - name: Execute reload command on {{ ansible_host }}
       cisco.ios.ios_command:
         commands:
-          - command: "reload\n" # Using 'reload' for immediate reload based on your output
-            prompt: 'Proceed with reload? [confirm]'
-            answer: "\r"
+          - command: "reload\n" 
+            prompts:
+              - prompt: 'System configuration has been modified. Save? [yes/no]'
+                answer: "y"
+              - prompt: 'Proceed with reload? [confirm]'
+                answer: "\r"
 
     - name: Wait for device {{ ansible_host }} to reboot and become available via SSH
       ansible.builtin.wait_for:
