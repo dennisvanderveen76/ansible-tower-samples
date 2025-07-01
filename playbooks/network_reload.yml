@@ -1,9 +1,67 @@
 ---
-- name: Reboot network devices
-  hosts: cisco_ios
-  gather_facts: false
+- name: Save Running Config and Reload Cisco IOS Devices (One at a Time)
+  hosts: cisco_ios # Replace with your inventory group for Cisco IOS devices
+  gather_facts: false      # Disable default fact gathering
+
+  # This is the key: Process only one host at a time
+  serial: 1
+
+  vars:
+    ansible_connection: network_cli
+    reconnect_delay_seconds: 300 # Initial delay (in seconds) before checking for connectivity (e.g., 5 minutes)
+    reconnect_timeout_seconds: 900 # Total timeout (in seconds) for device to come back online (e.g., 15 minutes)
 
   tasks:
-    - name: Use reload role
-      ansible.builtin.include_role:
-        name: "../roles/reload"
+    - name: Display critical warning about device reload (Overall)
+      ansible.builtin.pause:
+        prompt: "WARNING: You are about to SAVE and RELOAD devices ONE AT A TIME. This will cause network downtime per device. Type 'yes' to proceed, or Ctrl+C to cancel this entire run."
+      run_once: true # This prompt appears only once at the very beginning of the playbook execution
+      when: not ansible_check_mode
+
+    - name: Get user confirmation for reload of {{ ansible_host }}
+      # This prompt will appear for EACH device as it's processed serially
+      ansible.builtin.pause:
+        prompt: "To confirm reload of {{ ansible_host }}, type 'yes' to continue, or Ctrl+C to abort this host's reload."
+      register: user_confirmation_input
+      when: not ansible_check_mode # Don't prompt in check mode
+
+    - name: Verify user confirmation for {{ ansible_host }}
+      ansible.builtin.fail:
+        msg: "Reload cancelled by user for {{ ansible_host }}."
+      when:
+        - not ansible_check_mode
+        - user_confirmation_input.user_input | default('') | lower != 'yes'
+
+    - name: Save running configuration to startup-config on {{ ansible_host }}
+      cisco.ios.ios_config:
+        save: yes # This explicitly saves the running config to startup-config
+      delegate_to: rhel.shared
+      when: not ansible_check_mode # Don't save in check mode
+
+    - name: Execute reload command on {{ ansible_host }}
+      ansible.netcommon.cli_command:
+        command: "reload"
+      delegate_to: rhel.shared
+      when: not ansible_check_mode
+
+    - name: Wait for device {{ ansible_host }} to reboot and become available via SSH
+      ansible.builtin.wait_for:
+        port: 22
+        host: "{{ ansible_host }}"
+        delay: "{{ reconnect_delay_seconds }}"
+        timeout: "{{ reconnect_timeout_seconds }}"
+        state: started
+      delegate_to: localhost
+      when: not ansible_check_mode
+
+    - name: Verify device {{ ansible_host }} is reachable and get uptime after reload (optional)
+      ansible.netcommon.cli_command:
+        command: "show version | include uptime"
+      delegate_to: localhost
+      register: uptime_after_reload
+      when: not ansible_check_mode
+
+    - name: Display uptime for {{ ansible_host }} after successful reload (optional)
+      ansible.builtin.debug:
+        msg: "Device {{ ansible_host }} successfully reloaded. New Uptime: {{ uptime_after_reload.stdout | default('N/A') }}"
+      when: not ansible_check_mode
