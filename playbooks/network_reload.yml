@@ -67,12 +67,13 @@
       cisco.ios.ios_command:
         commands: 
           - command: "reload"
-            prompt:
+            prompts:
+            - prompt:
                - "System configuration has been modified. Save? [yes/no]" # Exact match for save prompt
+              answer: "y"
+            - prompt:
                - "Proceed with reload? [confirm]" # Exact match for confirmation prompt
-            answer: 
-                - "y"   
-                - "\r"      
+              answer: "\n"      
 
     - name: Wait for device {{ ansible_host }} to reboot and become available via SSH
       ansible.builtin.wait_for:
