@@ -81,7 +81,17 @@
 
     - name: Execute reload command on {{ ansible_host }}
       ansible.netcommon.cli_command:
-        command: "reload in 1"
+        command: "reload"
+        prompt:
+          - "System configuration has been modified. Save? [yes/no/cancel]" # Often seen for unsaved changes
+          - "Proceed with reload? [confirm]" # Common confirmation
+          - "confirm" # A common alternative for confirmation
+          - "Yes/No/Cancel" # Another variation
+        answer:
+          - "yes" # Answer 'yes' to save
+          - "yes" # Answer 'yes' to proceed with reload
+          - "y"   # Try 'y' if 'yes' doesn't work for confirmation
+          - "yes" # Answer 'yes' for any other variants
       # If your AAP execution node requires a jump host, uncomment below:
       # delegate_to: your_jump_host_name
 
