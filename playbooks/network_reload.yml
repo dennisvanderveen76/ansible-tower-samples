@@ -67,7 +67,7 @@
 
     - name: Execute reload command on {{ ansible_host }}
       ansible.netcommon.cli_command:
-        command: "reload\n"
+        command: "reload in 1"
         prompt:
           - "System configuration has been modified. Save? [yes/no/cancel]" # Often seen for unsaved changes
           - "Proceed with reload? [confirm]" # Common confirmation
