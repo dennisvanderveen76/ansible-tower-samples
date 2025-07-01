@@ -68,9 +68,9 @@
         inventory: "{{ restore_inventory | default('Inventory') }}"
         project: "{{ restore_project | default('playbooks') }}"
         playbook: "{{ restores_playbook | default('playbooks/network_restore.yml') }}"
-        credential: 
+        credentials: 
           - "cisco"
-          - "rhel credential"
+          - "rhel"
         survey_enabled: true
         survey_spec: "{{ lookup('template', '{{ playbook_dir }}/templates/backup.j2') }}"
         validate_certs: false
