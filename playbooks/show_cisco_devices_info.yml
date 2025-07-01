@@ -6,6 +6,7 @@
     - name: Get config for IOS devices
       cisco.ios.ios_facts:
         gather_subset: all
+      register: result
 
     - name: Display device OS versions
       ansible.builtin.debug:
