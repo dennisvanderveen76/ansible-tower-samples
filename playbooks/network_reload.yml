@@ -71,11 +71,11 @@
         command: "reload"
         check_all: true
         prompt:
-          - "System configuration has been modified. Save? [yes/no]" # Exact match for save prompt
-          - "Proceed with reload? [confirm]" # Exact match for confirmation prompt
+          - "Save?" # Exact match for save prompt
+          - "confirm" # Exact match for confirmation prompt
         answer:
           - "y"   # Your specific answer for save
-          - "y" # Your specific answer for confirmation (just Enter)
+          - "\r" # Your specific answer for confirmation (just Enter)
 
     - name: Wait for device {{ ansible_host }} to reboot and become available via SSH
       ansible.builtin.wait_for:
