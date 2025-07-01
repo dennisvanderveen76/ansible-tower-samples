@@ -8,7 +8,6 @@
       cisco.ios.ios_banner:
         banner: login
         text: |
-          this is my login banner
-          that contains a multiline
-          string
+          this is {{ inventory_hostname }}
+          and is a {{ environment }}
         state: present

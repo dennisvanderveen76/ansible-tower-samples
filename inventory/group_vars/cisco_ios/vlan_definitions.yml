@@ -1,28 +1,28 @@
 ---
 vlan_definitions:
-  - name: DATA
-    vlan_id: 10
-    subnet_ip: 172.16.10.0
-    subnet_mask: 255.255.255.0
-    gateway_ip: 
-      R1: 172.16.10.1
-      R2: 172.16.10.2
-      VRRP: 172.16.10.10
+- name: "{{ vlan_name }}"
+  vlan_id: "{{ vlan_id }}"
+  subnet_ip: 172.16.{{ vlan_id }}.0
+  subnet_mask: 255.255.255.0
+  gateway_ip:
+    R1: 172.16.{{ vlan_id }}.1
+    R2: 172.16.{{ vlan_id }}.2
+    VRRP: 172.16.{{ vlan_id }}.10
 
-  - name: VOICE
-    vlan_id: 20
-    subnet_ip: 172.16.20.0
-    subnet_mask: 255.255.255.0
-    gateway_ip: 
-      R1: 172.16.20.1
-      R2: 172.16.20.2
-      VRRP: 172.16.20.10
+# - name: VOICE
+#   vlan_id: 20
+#   subnet_ip: 172.16.20.0
+#   subnet_mask: 255.255.255.0
+#   gateway_ip: 
+#     R1: 172.16.20.1
+#     R2: 172.16.20.2
+#     VRRP: 172.16.20.10
 
-  # - name: IOT
-  #   vlan_id: 30
-  #   subnet_ip: 172.16.30.0
-  #   subnet_mask: 255.255.255.0
-  #   gateway_ip: 
-  #     R1: 172.16.30.1
-  #     R2: 172.16.30.2
-  #     VRRP: 172.16.30.10
+# - name: IOT
+#   vlan_id: 30
+#   subnet_ip: 172.16.30.0
+#   subnet_mask: 255.255.255.0
+#   gateway_ip: 
+#     R1: 172.16.30.1
+#     R2: 172.16.30.2
+#     VRRP: 172.16.30.10
