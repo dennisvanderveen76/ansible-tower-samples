@@ -65,10 +65,10 @@
       ansible.controller.job_template:
         name: "Network Automation - Restore"
         job_type: "run"
-        inventory: "{{ restore_inventory | default('Network Inventory') }}"
-        project: "{{ restore_project | default('Network Toolkit') }}"
+        inventory: "{{ restore_inventory | default('Inventory') }}"
+        project: "{{ restore_project | default('playbooks') }}"
         playbook: "{{ restores_playbook | default('playbooks/network_restore.yml') }}"
-        credential: "{{ restore_credential | default('Network Credential') }}"
+        credential: "{{ restore_credential | default('cisco') }}"
         survey_enabled: true
         survey_spec: "{{ lookup('template', '{{ playbook_dir }}/templates/backup.j2') }}"
         validate_certs: false
