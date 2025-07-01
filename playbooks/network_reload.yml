@@ -70,7 +70,7 @@
         command: "reload/n"
         prompt:
           - "System configuration has been modified. Save? \[yes/no\]" # Exact match for save prompt
-          - 'Proceed with reload? \[confirm\]' # Exact match for confirmation prompt
+          - "Proceed with reload? [confirm]" # Exact match for confirmation prompt
         answer:
           - "y"   # Your specific answer for save
           - "\n" # Your specific answer for confirmation (just Enter)
