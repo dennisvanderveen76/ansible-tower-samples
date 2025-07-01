@@ -3,14 +3,14 @@
   hosts: cisco_ios_routers
   vars:
    vlan_definitions:
-    - gateway_ip:
-      R1: 172.16.{{ vlan_id }}.1
-      R2: 172.16.{{ vlan_id }}.2
-      VRRP: 172.16.{{ vlan_id }}.10
-      name: {{ vlan_name }}
-      subnet_ip: 172.16.{{ vlan_id }}.0
-      subnet_mask: 255.255.255.0
-      vlan_id: {{ vlan_id }}
+    - vlan_id: "{{ vlan_id | int }}" # Ensure vlan_id is treated as an integer
+      name: "{{ vlan_name }}"
+      subnet_ip: "172.16.{{ vlan_id | int }}.0"
+      subnet_mask: "255.255.255.0" # Assuming a /24 subnet
+      gateway_ip:
+        R1: "172.16.{{ vlan_id | int }}.1"
+        R2: "172.16.{{ vlan_id | int }}.2"
+        VRRP: "172.16.{{ vlan_id | int }}.10" # VRRP virtual IP
   tasks:
     - name: Configure router VLAN subinterfaces
       cisco.ios.ios_config:
