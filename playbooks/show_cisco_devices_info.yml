@@ -9,4 +9,5 @@
 
     - name: Display device OS versions
       ansible.builtin.debug:
+        var: result
         msg: "Device {{ ansible_net_hostname }} is running {{ ansible_net_iostype }} version {{ ansible_net_version }}"
