@@ -11,6 +11,7 @@
     reconnect_delay_seconds: 30 # Initial delay (in seconds) before checking for connectivity (e.g., 5 minutes)
     reconnect_timeout_seconds: 45 # Total timeout (in seconds) for device to come back online (e.g., 15 minutes)
     ansible_network_os: ios
+    desired_config_register: "0x2102"
 
   tasks:
     - name: Get current configuration register value
@@ -21,7 +22,21 @@
 
     - name: Parse current configuration register value
       ansible.builtin.set_fact:
-        current_confreg: "{{ current_confreg_output.stdout[0] | regex_search('0x[0-9a-fA-F]+', '\\g<0>') | first }}"
+        # Use a safe filter chain:
+        # 1. default('') to handle cases where stdout[0] might not exist.
+        # 2. regex_search() will return an empty list if no match.
+        # 3. | default([]) to ensure 'match' is always a list for | first.
+        # 4. | first | default('UNKNOWN') to handle empty list or no match.
+        current_confreg: >-
+          {% set raw_line = current_confreg_output.stdout[0] | default('') %}
+          {% set match = raw_line | regex_search('0x[0-9a-fA-F]+', '\\g<0>') %}
+          {% if match %}
+            {{ match | first }}
+          {% else %}
+            # If no '0x...' found, assume it's 'UNKNOWN'
+            # This will force the 'config-register' change in the next step
+            "UNKNOWN"
+          {% endif %}
       when:
         - not ansible_check_mode
         - current_confreg_output.stdout is defined and current_confreg_output.stdout | length > 0
