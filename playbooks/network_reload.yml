@@ -57,7 +57,7 @@
 
     - name: Execute reload command on {{ ansible_host }}
       ansible.netcommon.cli_command:
-        command: "reload immediate noconfirm"
+        command: "reload"
         prompt:
           - Save?
           - confirm
