@@ -69,11 +69,11 @@
           - command: "reload" # Using 'reload' for immediate reload based on your output
             prompts:
               # Corrected: 'prompt' is a string, not a list of one string
-              - prompt: "System configuration has been modified. Save\\? \\[yes/no\\]"
+              - prompt: "System configuration has been modified. Save? [yes/no]"
                 answer: "y"
               # Corrected: 'prompt' is a string, not a list of one string
-              - prompt: "Proceed with reload\\? \\[confirm\\]"
-                answer: "\n"
+              - prompt: "Proceed with reload? [confirm]"
+                answer: "y"
         reboot_timeout: 180 # Crucial: This tells the module to expect a reboot   
 
     - name: Wait for device {{ ansible_host }} to reboot and become available via SSH
