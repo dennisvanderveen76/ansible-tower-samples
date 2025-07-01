@@ -4,7 +4,7 @@
   gather_facts: false # Often good practice for network automation
 
   tasks:
-    - name: Pre-check: Ensure vlan_definitions is provided from survey
+    - name: "Pre-check: Ensure vlan_definitions is provided from survey"
       ansible.builtin.fail:
         msg: "The 'vlan_definitions' variable (list of VLAN ID/Name) is required. Please provide it via the survey."
       when: vlan_definitions is not defined or vlan_definitions | length == 0 or not (vlan_definitions is iterable and vlan_definitions is not string)
