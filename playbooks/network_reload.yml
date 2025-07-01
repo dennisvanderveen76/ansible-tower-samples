@@ -30,18 +30,21 @@
 
   tasks:
     - name: Get current configuration register value
-      cisco.ios.ios_command:
-        commands: 
-           - command: "show version | include Configuration register"
+      ansible.netcommon.cli_command:
+        command: "show version | include Configuration register"
+      # If your AAP execution node requires a jump host, uncomment below:
+      # delegate_to: your_jump_host_name # Ensure 'your_jump_host_name' is defined in AAP inventory
       register: current_confreg_output
+      # No 'when: not ansible_check_mode' here if you want to perform this check even in check mode
+      # However, if 'confirm_reload' makes the whole play conditional, it's fine.
 
     - name: Parse current configuration register value
       ansible.builtin.set_fact:
         current_confreg: >-
           {% set raw_line = current_confreg_output.stdout[0] | default('') %}
-          {% set all_matches = raw_line | regex_findall('0x[0-9a-fA-F]+') %} # Use regex_findall
-          {% if all_matches %}
-            {{ all_matches | last }} # Get the last match (e.g., 0x2102)
+          {% set match = raw_line | regex_search('0x[0-9a-fA-F]+', '\\g<0>') %}
+          {% if match %}
+            {{ match | first }}
           {% else %}
             "UNKNOWN"
           {% endif %}
@@ -64,13 +67,16 @@
       # delegate_to: your_jump_host_name
 
     - name: Execute reload command on {{ ansible_host }}
-      cisco.ios.ios_command:
-        commands:
-          - command: "reload\n" 
-            prompt: 'System configuration has been modified. Save? [yes/no]'
-            answer: "y"
-            prompt: 'Proceed with reload? [confirm]'
-            answer: "\r"
+      ansible.netcommon.cli_command:
+        command: "reload"
+        check_all: true
+        prompt:
+          - "System configuration has been modified. Save? [yes/no]" # Exact match for save prompt
+          - "Proceed with reload? [confirm]" # Exact match for confirmation prompt
+        answer:
+          - "y"   # Your specific answer for save
+          - "y" # Your specific answer for confirmation (just Enter)
+
     - name: Wait for device {{ ansible_host }} to reboot and become available via SSH
       ansible.builtin.wait_for:
         port: 22
