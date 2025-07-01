@@ -1,6 +1,16 @@
 ---
 - name: Manage VLAN subinterfaces on routers
   hosts: cisco_ios_routers
+  vars:
+   vlan_definitions:
+    - gateway_ip:
+      R1: 172.16.{{ vlan_id }}.1
+      R2: 172.16.{{ vlan_id }}.2
+      VRRP: 172.16.{{ vlan_id }}.10
+      name: {{ vlan_name }}
+      subnet_ip: 172.16.{{ vlan_id }}.0
+      subnet_mask: 255.255.255.0
+      vlan_id: {{ vlan_id }}
   tasks:
     - name: Configure router VLAN subinterfaces
       cisco.ios.ios_config:
