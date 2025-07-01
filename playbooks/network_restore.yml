@@ -9,7 +9,7 @@
         src: "/backup/{{ rollback_date }}/{{ inventory_hostname }}.txt"
         dest: "/tmp/{{ rollback_date }}/"
         flat: true
-      delegate_to: rhel-server
+      delegate_to: rhel.shared
       when: ansible_network_os is defined
 
     - name: Load restore role
