@@ -18,6 +18,15 @@
     confirm_reload: "yes" # Default to 'no' for safety
 
   tasks:
+    - name: Debug effective ansible_network_cli_connect_timeout
+      ansible.builtin.debug:
+        msg: "Effective network_cli connect timeout: {{ ansible_network_cli_connect_timeout }}"
+      when: not ansible_check_mode # Run this in a real execution to see the true value
+
+    - name: Pre-check for reload confirmation
+      ansible.builtin.fail:
+        msg: "Reload not confirmed. Please set 'confirm_reload' variable to 'yes' in the survey or extra vars to proceed."
+      when: confirm_reload | lower != 'yes'
     - name: Pre-check for reload confirmation
       ansible.builtin.fail:
         msg: "Reload not confirmed. Please set 'confirm_reload' variable to 'yes' in the survey or extra vars to proceed."
