@@ -15,7 +15,7 @@
         state: present
       # Delegate to localhost if you're running from a control node that can SSH to the devices
       # This is common for network automation.
-      delegate_to: localhost
+
 
       # Optional: Add a 'register' to capture the output of the task
       register: banner_result
