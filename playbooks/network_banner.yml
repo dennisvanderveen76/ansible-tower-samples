@@ -9,5 +9,5 @@
         banner: login
         text: |
           this is {{ inventory_hostname }}
-          and is a {{ environment }}
+          and is a "{{ environment }}" environment
         state: present
