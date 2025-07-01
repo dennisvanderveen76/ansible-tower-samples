@@ -10,7 +10,7 @@
       # 'text' is the content of the banner.
       # 'state: present' ensures the banner is configured as specified.
       cisco.ios.ios_banner:
-        type: "{{ banner_type }}"
+        banner: "{{ banner_type }}"
         text: "{{ banner_text }}"
         state: present
       # Delegate to localhost if you're running from a control node that can SSH to the devices
