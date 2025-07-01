@@ -10,6 +10,7 @@
     ansible_connection: network_cli
     reconnect_delay_seconds: 300 # Initial delay (in seconds) before checking for connectivity (e.g., 5 minutes)
     reconnect_timeout_seconds: 900 # Total timeout (in seconds) for device to come back online (e.g., 15 minutes)
+    ansible_network_os: ios
 
   tasks:
     - name: Save running configuration to startup-config on {{ ansible_host }}
