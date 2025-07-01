@@ -29,7 +29,7 @@
     - name: Create time stamp for play
       ansible.builtin.set_fact:
         datetime: "{{ lookup('pipe', 'date +%Y-%m-%d-%H-%M') }}"
-      delegate_to: backup-server
+      delegate_to: rhel.shared
       delegate_facts: true
       run_once: true
 
@@ -38,18 +38,18 @@
         path: /backup/
         state: directory
         mode: "755"
-      delegate_to: backup-server
+      delegate_to: rhel.shared
       become: true
       run_once: true
 
     - name: Save configuration to backup server
       ansible.builtin.copy:
         src: "{{ config_output.backup_path }}"
-        dest: "/backup/{{ hostvars['backup-server'].datetime }}/"
+        dest: "/backup/{{ hostvars['rhel.shared'].datetime }}/"
         mode: "644"
       when: config_output is defined
       become: true
-      delegate_to: backup-server
+      delegate_to: rhel.shared
 
     - name: Find backups
       ansible.builtin.find:
@@ -58,7 +58,7 @@
       register: backups
       run_once: true
       become: true
-      delegate_to: backup-server
+      delegate_to: rhel.shared
       delegate_facts: true
 
     - name: Create restore job template
