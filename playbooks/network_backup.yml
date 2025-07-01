@@ -63,7 +63,7 @@
 
     - name: Create restore job template
       ansible.controller.job_template:
-        name: "Network Automation - Restore"
+        name: "Network - Restore"
         job_type: "run"
         inventory: "{{ restore_inventory | default('Inventory') }}"
         project: "{{ restore_project | default('playbooks') }}"
