@@ -32,20 +32,16 @@
     - name: Get current configuration register value
       cisco.ios.ios_command:
         commands: 
-         - command: "show version | include Configuration register"
-      # If your AAP execution node requires a jump host, uncomment below:
-      # delegate_to: your_jump_host_name # Ensure 'your_jump_host_name' is defined in AAP inventory
+           - command: "show version | include Configuration register"
       register: current_confreg_output
-      # No 'when: not ansible_check_mode' here if you want to perform this check even in check mode
-      # However, if 'confirm_reload' makes the whole play conditional, it's fine.
 
     - name: Parse current configuration register value
       ansible.builtin.set_fact:
         current_confreg: >-
           {% set raw_line = current_confreg_output.stdout[0] | default('') %}
-          {% set match = raw_line | regex_search('0x[0-9a-fA-F]+', '\\g<0>') %}
-          {% if match %}
-            {{ match | first }}
+          {% set all_matches = raw_line | regex_findall('0x[0-9a-fA-F]+') %} # Use regex_findall
+          {% if all_matches %}
+            {{ all_matches | last }} # Get the last match (e.g., 0x2102)
           {% else %}
             "UNKNOWN"
           {% endif %}
