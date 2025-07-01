@@ -33,7 +33,7 @@ collapsible: true
         </tr>
     </thead>
     <tbody>
-{% for network_switch in groups['network']|sort %}
+{% for network_switch in groups['cisco_ios']|sort %}
 {% if hostvars[network_switch].ansible_facts.network_resources is defined %}
         <tr>
             <td class="summary_info">
