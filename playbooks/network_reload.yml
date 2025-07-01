@@ -68,11 +68,9 @@
     - name: Execute reload command on {{ ansible_host }}
       ansible.netcommon.cli_command:
         command: "reload/n"
-        sendonly: yes
-        sendonly: yes
         prompt:
           - "System configuration has been modified. Save? \[yes/no\]" # Exact match for save prompt
-          - "Proceed with reload? \[confirm\]" # Exact match for confirmation prompt
+          - 'Proceed with reload? \[confirm\]' # Exact match for confirmation prompt
         answer:
           - "y"   # Your specific answer for save
           - "\n" # Your specific answer for confirmation (just Enter)
