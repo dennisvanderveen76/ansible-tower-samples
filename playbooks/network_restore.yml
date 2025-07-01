@@ -4,12 +4,12 @@
   gather_facts: false
 
   tasks:
-    - name: Retreive configuration from backup-server to execution environment
+    - name: Retreive configuration from rhel.shared to execution environment
       ansible.builtin.fetch:
         src: "/backup/{{ rollback_date }}/{{ inventory_hostname }}.txt"
         dest: "/tmp/{{ rollback_date }}/"
         flat: true
-      delegate_to: backup-server
+      delegate_to: rhel-server
       when: ansible_network_os is defined
 
     - name: Load restore role
