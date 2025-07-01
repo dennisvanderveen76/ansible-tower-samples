@@ -1,64 +1,24 @@
 ---
-- name: Manage VLAN subinterfaces on routers with Derived IP Info
-  hosts: cisco_ios_routers # Ensure this group exists in your AAP inventory
-  gather_facts: false # Often good practice for network automation
-
+- name: Manage VLAN subinterfaces on routers
+  hosts: cisco_ios_routers
   tasks:
-    - name: Derive full IP information for each VLAN
-      ansible.builtin.set_fact:
-        # This Jinja2 block iterates through the vlan_definitions from the survey
-        # and calculates all the IP-related details based on the vlan_id.
-        # This creates a new list 'processed_vlan_defs' with rich data.
-        processed_vlan_defs: |
-          {% set _processed_vlans = [] %}
-          {% for item_vlan in vlan_definitions %}
-            {% set vlan_id_num = item_vlan.vlan_id | int %} # Ensure vlan_id is treated as a number
-
-            {# Define the third octet. Assuming VLAN IDs <= 254 fit directly for 172.16.X.Y #}
-            {# For VLAN IDs > 254, you would need more complex mapping logic here #}
-            {% set ip_third_octet = vlan_id_num %}
-
-            {% set derived_subnet_ip = "172.16." ~ ip_third_octet ~ ".0" %}
-            {% set derived_subnet_mask = "255.255.255.0" %} # Assuming a /24 subnet
-
-            {% set derived_gateway_ips = {
-                'R1': "172.16." ~ ip_third_octet ~ ".1",
-                'R2': "172.16." ~ ip_third_octet ~ ".2",
-                'VRRP': "172.16." ~ ip_third_octet ~ ".10" # VRRP virtual IP
-              }
-            %}
-
-            {{ _processed_vlans.append({
-                'vlan_id': item_vlan.vlan_id,
-                'name': item_vlan.name,
-                'subnet_ip': derived_subnet_ip,
-                'subnet_mask': derived_subnet_mask,
-                'gateway_ip': derived_gateway_ips
-            }) }}
-          {% endfor %}
-          {{ _processed_vlans }}
-      run_once: true # This task runs once on the first host, then 'processed_vlan_defs' is available to all.
-
     - name: Configure router VLAN subinterfaces
       cisco.ios.ios_config:
-        # Use the template to generate the CLI config lines for each VLAN subinterface
+        # use the template to generate the CLI config lines for each VLAN subinterface
+        # split it into lines and ignore empty lines before feeding it to ios_config
         lines: "{{ lookup('template', 'cisco_router_vlan_subinterface_config.j2').splitlines() | select() }}"
-        parents: "interface Ethernet0/1.{{ vlan.vlan_id }}" # Assumes interface Ethernet0/1 is the base
-        defaults: true # Ensures idempotency by checking against default config
-      loop: "{{ processed_vlan_defs }}" # Loop over the list with fully derived IP information
+        parents: "interface Ethernet0/1.{{ vlan.vlan_id }}"
+        defaults: true # to get all Cisco IOS defaults (show run all)
+      loop: "{{ vlan_definitions }}"
       loop_control:
-        loop_var: vlan # This 'vlan' variable in the loop now contains 'gateway_ip' and other derived info.
+        loop_var: vlan
       register: config_changes
 
-    - name: Display executed commands for changed VLANs
+    - name: Display executed commands
       ansible.builtin.debug:
         msg: "commands: {{ item.commands }}"
-      loop: "{{ config_changes.results }}" # Loop over the results of each config attempt
-      when: item.changed # Only display debug message if actual changes were made
+      loop: "{{ config_changes.results }}"
+      when: item.changed # noqa: no-handler
       loop_control:
-        label: "VLAN {{ item.vlan.vlan_id }} {{ item.vlan.name }}" # Custom label for clearer debug output
+        label: "VLAN {{ item.vlan.vlan_id }} {{ item.vlan.name }}"
 
-    - name: Save configuration if changes were made
-      cisco.ios.ios_config:
-        save_when: changed # Save running-config to startup-config if the task resulted in changes
-      when: config_changes.changed # Only execute save if any configurations were actually applied
