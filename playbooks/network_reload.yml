@@ -16,7 +16,6 @@
     - name: Get current configuration register value
       ansible.netcommon.cli_command:
         command: "show version | include Configuration register"
-      delegate_to: localhost
       register: current_confreg_output
       when: not ansible_check_mode # Only run in actual execution
 
@@ -31,7 +30,6 @@
       cisco.ios.ios_config:
         lines:
           - "config-register {{ desired_config_register }}"
-      delegate_to: localhost
       when:
         - not ansible_check_mode
         - current_confreg != desired_config_register # Only change if needed
