@@ -1,6 +1,6 @@
 ---
 - name: Reboot network devices
-  hosts: routers
+  hosts: cisco_ios
   gather_facts: false
 
   tasks:
