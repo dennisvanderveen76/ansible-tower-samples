@@ -1,65 +1,70 @@
 ---
 - name: Save Running Config and Reload Cisco IOS Devices (One at a Time)
   hosts: cisco_ios # Replace with your inventory group for Cisco IOS devices
-  gather_facts: false      # Disable default fact gathering
+  gather_facts: false
 
-  # This is the key: Process only one host at a time
-  serial: 1
+  serial: 1 # Process only one host at a time
 
   vars:
     ansible_connection: network_cli
-    reconnect_delay_seconds: 70 # Initial delay (in seconds) before checking for connectivity (e.g., 5 minutes)
-    reconnect_timeout_seconds: 70 # Total timeout (in seconds) for device to come back online (e.g., 15 minutes)
-    ansible_network_cli_connect_timeout: 70
+    reconnect_delay_seconds: 120 # Wait 2 minutes after reload cmd is sent, before starting SSH checks
+    reconnect_timeout_seconds: 480 # Total 8 minutes to wait for device to come back online via SSH
+    ansible_network_cli_connect_timeout: 180 # Timeout for network_cli connection and command execution
     ansible_network_os: ios
     desired_config_register: "0x2102"
+    # IMPORTANT: This variable should be set via an AAP Survey or Extra Variable
+    # Set its default to 'no' or an empty string for safety.
+    # Users launching the job must explicitly set it to 'yes' to proceed.
+    confirm_reload: "yes" # Default to 'no' for safety
 
   tasks:
+    - name: Pre-check for reload confirmation
+      ansible.builtin.fail:
+        msg: "Reload not confirmed. Please set 'confirm_reload' variable to 'yes' in the survey or extra vars to proceed."
+      when: confirm_reload | lower != 'yes'
+
     - name: Get current configuration register value
       ansible.netcommon.cli_command:
         command: "show version | include Configuration register"
+      # If your AAP execution node requires a jump host, uncomment below:
+      # delegate_to: your_jump_host_name # Ensure 'your_jump_host_name' is defined in AAP inventory
       register: current_confreg_output
-      when: not ansible_check_mode # Only run in actual execution
+      # No 'when: not ansible_check_mode' here if you want to perform this check even in check mode
+      # However, if 'confirm_reload' makes the whole play conditional, it's fine.
 
     - name: Parse current configuration register value
       ansible.builtin.set_fact:
-        # Use a safe filter chain:
-        # 1. default('') to handle cases where stdout[0] might not exist.
-        # 2. regex_search() will return an empty list if no match.
-        # 3. | default([]) to ensure 'match' is always a list for | first.
-        # 4. | first | default('UNKNOWN') to handle empty list or no match.
         current_confreg: >-
           {% set raw_line = current_confreg_output.stdout[0] | default('') %}
           {% set match = raw_line | regex_search('0x[0-9a-fA-F]+', '\\g<0>') %}
           {% if match %}
             {{ match | first }}
           {% else %}
-            # If no '0x...' found, assume it's 'UNKNOWN'
-            # This will force the 'config-register' change in the next step
             "UNKNOWN"
           {% endif %}
       when:
-        - not ansible_check_mode
         - current_confreg_output.stdout is defined and current_confreg_output.stdout | length > 0
 
     - name: Change configuration register to boot normally ({{ desired_config_register }})
       cisco.ios.ios_config:
         lines:
           - "config-register {{ desired_config_register }}"
+      # If your AAP execution node requires a jump host, uncomment below:
+      # delegate_to: your_jump_host_name
       when:
-        - not ansible_check_mode
-        - current_confreg != desired_config_register # Only change if needed
+        - current_confreg is defined and (current_confreg != desired_config_register or current_confreg == "UNKNOWN")
 
     - name: Save running configuration to startup-config on {{ ansible_host }}
       cisco.ios.ios_config:
         save_when: changed # This explicitly saves the running config to startup-config
-      when: not ansible_check_mode # Don't save in check mode
+      # If your AAP execution node requires a jump host, uncomment below:
+      # delegate_to: your_jump_host_name
 
     - name: Execute reload command on {{ ansible_host }}
       ansible.netcommon.cli_command:
         command: "reload in 1"
-      delegate_to: rhel.shared
-      when: not ansible_check_mode
+      # If your AAP execution node requires a jump host, uncomment below:
+      # delegate_to: your_jump_host_name
 
     - name: Wait for device {{ ansible_host }} to reboot and become available via SSH
       ansible.builtin.wait_for:
@@ -68,15 +73,15 @@
         delay: "{{ reconnect_delay_seconds }}"
         timeout: "{{ reconnect_timeout_seconds }}"
         state: started
-      when: not ansible_check_mode
+      delegate_to: localhost # This task typically runs from the AAP execution node to monitor connection
 
     - name: Verify device {{ ansible_host }} is reachable and get uptime after reload (optional)
       ansible.netcommon.cli_command:
         command: "show version | include uptime"
+      # If your AAP execution node requires a jump host, uncomment below:
+      # delegate_to: your_jump_host_name
       register: uptime_after_reload
-      when: not ansible_check_mode
 
     - name: Display uptime for {{ ansible_host }} after successful reload (optional)
       ansible.builtin.debug:
         msg: "Device {{ ansible_host }} successfully reloaded. New Uptime: {{ uptime_after_reload.stdout | default('N/A') }}"
-      when: not ansible_check_mode
