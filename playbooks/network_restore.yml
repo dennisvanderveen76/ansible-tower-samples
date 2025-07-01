@@ -1,6 +1,6 @@
 ---
 - name: Restore router configurations
-  hosts: network
+  hosts: cisco_ios
   gather_facts: false
 
   tasks:
