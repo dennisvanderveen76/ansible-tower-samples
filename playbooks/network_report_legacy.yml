@@ -1,6 +1,6 @@
 ---
 - name: Retrieve facts for network infrastructure
-  hosts: network
+  hosts: cisco_ios
   gather_facts: false
 
   tasks:
@@ -9,7 +9,7 @@
         name: "../roles/facts"
 
 - name: Build report with facts
-  hosts: ansible-1
+  hosts: rhel.shared
   gather_facts: false
 
   tasks:
