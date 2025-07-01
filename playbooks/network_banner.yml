@@ -4,10 +4,23 @@
   gather_facts: false
 
   tasks:
-    - name: Load banner onto network device
+    - name: Ensure Cisco IOS banner is configured
+      # The 'cisco.ios.ios_banner' module is used to manage banners on Cisco IOS devices.
+      # 'type' specifies the banner type (e.g., motd, login).
+      # 'text' is the content of the banner.
+      # 'state: present' ensures the banner is configured as specified.
       cisco.ios.ios_banner:
-        banner: login
-        text: |
-          this is {{ inventory_hostname }}
-          and is a {{ environment_var }} environment
+        type: "{{ banner_type }}"
+        text: "{{ banner_text }}"
         state: present
+      # Delegate to localhost if you're running from a control node that can SSH to the devices
+      # This is common for network automation.
+      delegate_to: localhost
+
+      # Optional: Add a 'register' to capture the output of the task
+      register: banner_result
+
+    - name: Display banner configuration result
+      # Use the 'debug' module to show the output from the previous task.
+      ansible.builtin.debug:
+        var: banner_result
