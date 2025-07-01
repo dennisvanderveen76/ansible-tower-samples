@@ -57,13 +57,8 @@
 
     - name: Execute reload command on {{ ansible_host }}
       ansible.netcommon.cli_command:
-        command: "reload"
-        prompt:
-          - Save?
-          - confirm
-        answer:
-          - y
-          - y
+        command: "reload in 1"
+      delegate_to: rhel.shared
       when: not ansible_check_mode
 
     - name: Wait for device {{ ansible_host }} to reboot and become available via SSH
