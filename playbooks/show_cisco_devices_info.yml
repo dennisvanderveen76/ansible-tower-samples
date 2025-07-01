@@ -12,3 +12,12 @@
       ansible.builtin.debug:
         var: result
 
+- name: Build report with facts
+  hosts: rhel.shared
+  gather_facts: false
+
+  tasks:
+
+    - name: Build a report
+      ansible.builtin.include_role:
+        name: "../roles/build_report"
