@@ -2,6 +2,7 @@
 - name: Restore router configurations
   hosts: cisco_ios
   gather_facts: false
+  become: true
 
   tasks:
     - name: Retreive configuration from rhel.shared to execution environment
