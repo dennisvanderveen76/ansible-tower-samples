@@ -1,6 +1,6 @@
 ---
 - name: Save Running Config and Reload Cisco IOS Devices (One at a Time)
-  hosts: S1 # Replace with your inventory group for Cisco IOS devices
+  hosts: cisco_ios # Replace with your inventory group for Cisco IOS devices
   gather_facts: false
 
   serial: 1 # Process only one host at a time
