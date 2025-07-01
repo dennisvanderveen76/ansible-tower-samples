@@ -57,7 +57,7 @@
 
     - name: Execute reload command on {{ ansible_host }}
       ansible.netcommon.cli_command:
-        command: "reload in 1"
+        command: "reload immediate noconfirm"
       when: not ansible_check_mode
 
     - name: Wait for device {{ ansible_host }} to reboot and become available via SSH
