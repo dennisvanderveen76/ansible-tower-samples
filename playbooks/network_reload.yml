@@ -15,7 +15,7 @@
   tasks:
     - name: Save running configuration to startup-config on {{ ansible_host }}
       cisco.ios.ios_config:
-        save: yes # This explicitly saves the running config to startup-config
+        save_when: changed # This explicitly saves the running config to startup-config
       delegate_to: rhel.shared
       when: not ansible_check_mode # Don't save in check mode
 
