@@ -9,7 +9,8 @@
     ansible_connection: network_cli
     reconnect_delay_seconds: 120 # Wait 2 minutes after reload cmd is sent, before starting SSH checks
     reconnect_timeout_seconds: 480 # Total 8 minutes to wait for device to come back online via SSH
-    ansible_network_cli_connect_timeout: 180 # Timeout for network_cli connection and command execution
+    ansible_network_cli_connect_timeout: 180 # Timeout for network_cli connection and command executi
+    ansible_command_timeout: 180
     ansible_network_os: ios
     desired_config_register: "0x2102"
     # IMPORTANT: This variable should be set via an AAP Survey or Extra Variable
