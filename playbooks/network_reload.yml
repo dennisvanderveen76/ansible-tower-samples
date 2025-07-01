@@ -73,7 +73,7 @@
           - "System configuration has been modified. Save? [yes/no]" # Exact match for save prompt
           - "Proceed with reload? [confirm]" # Exact match for confirmation prompt
         answer:
-          - "y"   # Your specific answer for save
+          - "y\n"   # Your specific answer for save
           - "\n" # Your specific answer for confirmation (just Enter)
 
     - name: Wait for device {{ ansible_host }} to reboot and become available via SSH
@@ -83,7 +83,6 @@
         delay: "{{ reconnect_delay_seconds }}"
         timeout: "{{ reconnect_timeout_seconds }}"
         state: started
-      delegate_to: localhost # This task typically runs from the AAP execution node to monitor connection
 
     - name: Verify device {{ ansible_host }} is reachable and get uptime after reload (optional)
       ansible.netcommon.cli_command:
