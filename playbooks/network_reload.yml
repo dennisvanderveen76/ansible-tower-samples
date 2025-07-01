@@ -31,7 +31,8 @@
   tasks:
     - name: Get current configuration register value
      cisco.ios.ios_command:
-        commands: "show version | include Configuration register"
+        commands: 
+         - command: "show version | include Configuration register"
       # If your AAP execution node requires a jump host, uncomment below:
       # delegate_to: your_jump_host_name # Ensure 'your_jump_host_name' is defined in AAP inventory
       register: current_confreg_output
