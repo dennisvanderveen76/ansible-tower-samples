@@ -1,4 +1,4 @@
 ---
 collections:
-  #- cisco.ios
-  #- awx.awx
+  # - cisco.ios
+  # - awx.awx

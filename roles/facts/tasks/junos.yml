@@ -1,6 +1,0 @@
----
-- name: Gather juniper junos facts
-  vars:
-    ansible_connection: netconf
-  junipernetworks.junos.junos_facts:
-    gather_network_resources: "{{ network_resource | default('all') }}"

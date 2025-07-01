@@ -1,2 +1,0 @@
-- name: Load network platform modules
-  ansible.builtin.include_tasks: "{{ ansible_network_os }}.yml"
