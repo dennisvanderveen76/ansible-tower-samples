@@ -7,7 +7,7 @@
 
   vars:
     ansible_connection: network_cli
-    reconnect_delay_seconds: 120 # Wait 2 minutes after reload cmd is sent, before starting SSH checks
+    reconnect_delay_seconds: 45 # Wait 2 minutes after reload cmd is sent, before starting SSH checks
     reconnect_timeout_seconds: 480 # Total 8 minutes to wait for device to come back online via SSH
     ansible_network_cli_connect_timeout: 180 # Timeout for network_cli connection and command executi
     ansible_command_timeout: 180
