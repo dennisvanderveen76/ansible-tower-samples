@@ -12,26 +12,6 @@
     reconnect_timeout_seconds: 900 # Total timeout (in seconds) for device to come back online (e.g., 15 minutes)
 
   tasks:
-    - name: Display critical warning about device reload (Overall)
-      ansible.builtin.pause:
-        prompt: "WARNING: You are about to SAVE and RELOAD devices ONE AT A TIME. This will cause network downtime per device. Type 'yes' to proceed, or Ctrl+C to cancel this entire run."
-      run_once: true # This prompt appears only once at the very beginning of the playbook execution
-      when: not ansible_check_mode
-
-    - name: Get user confirmation for reload of {{ ansible_host }}
-      # This prompt will appear for EACH device as it's processed serially
-      ansible.builtin.pause:
-        prompt: "To confirm reload of {{ ansible_host }}, type 'yes' to continue, or Ctrl+C to abort this host's reload."
-      register: user_confirmation_input
-      when: not ansible_check_mode # Don't prompt in check mode
-
-    - name: Verify user confirmation for {{ ansible_host }}
-      ansible.builtin.fail:
-        msg: "Reload cancelled by user for {{ ansible_host }}."
-      when:
-        - not ansible_check_mode
-        - user_confirmation_input.user_input | default('') | lower != 'yes'
-
     - name: Save running configuration to startup-config on {{ ansible_host }}
       cisco.ios.ios_config:
         save: yes # This explicitly saves the running config to startup-config
