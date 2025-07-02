@@ -14,10 +14,12 @@
       condition: event.url_check.status == "up"
     ## Define the action we should take should the condition be met
       action:
-        run_job_template:
-          name: 'eda - site up'
-          organization: 'Default'
-          filter: '*'
+        debug:
+          msg: "website is up"
+        # run_job_template:
+        #   name: 'eda - site up'
+        #   organization: 'Default'
+        #   filter: '*'
 
     - name: Web site is down
       condition: event.url_check.status == "down"
