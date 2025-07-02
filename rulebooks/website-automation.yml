@@ -12,12 +12,10 @@
     - name: Web site is up
       condition: event.url_check.status == "up"
       action:
-        debug:
-          msg: Simple debug message
-        # run_job_template:
-        #   name: 'eda - site up'
-        #   organization: 'Default'
-        #   filter: '*'
+        run_job_template:
+          name: 'eda - site up'
+          organization: 'Default'
+          filter: '*'
 
     - name: Web site is down
       condition: event.url_check.status == "down"
