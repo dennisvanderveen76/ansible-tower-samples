@@ -20,5 +20,5 @@
         enabled: true
     - name: Create a default page
       ansible.builtin.copy:
-        content: "<h1>Hello world</h1>\n"
+        content: "<h1>Welkom to the Event Driven Ansible Demo site</h1>\n"
         dest: /var/www/html/index.html
