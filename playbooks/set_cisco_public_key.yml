@@ -1,0 +1,21 @@
+---
+- name: Add/Remove SSH Public Key on Cisco IOS Device for Existing User
+  hosts: cisco_ios
+  gather_facts: false
+
+  vars:
+    ios_username: "cisco" 
+    ios_ssh_public_key_file: "~/.ssh/id_ecdsa.pub" 
+    ios_ssh_public_key: "{{ lookup('file', ios_ssh_public_key_file) }}"
+
+  tasks:
+    - name: Add SSH public key to the existing local user
+      cisco.ios.ios_user:
+        name: "{{ ios_username }}"
+        sshkey: "{{ ios_ssh_public_key | trim }}" 
+        state: present 
+      when: not remove_ssh_key 
+
+    - name: Save the running configuration to startup configuration
+      cisco.ios.ios_config:
+        save_when: always
