@@ -14,7 +14,6 @@
         name: "{{ ios_username }}"
         sshkey: "{{ ios_ssh_public_key | trim }}" 
         state: present 
-      when: not remove_ssh_key 
 
     - name: Save the running configuration to startup configuration
       cisco.ios.ios_config:
