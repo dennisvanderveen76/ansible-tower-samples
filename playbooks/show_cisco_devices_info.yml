@@ -1,0 +1,12 @@
+---
+- name: Gather info from Cisco IOS devices
+  hosts: cisco_ios
+
+  tasks:
+    - name: Get config for IOS devices
+      cisco.ios.ios_facts:
+        gather_subset: min
+
+    - name: Display device OS versions
+      ansible.builtin.debug:
+        msg: "Device {{ ansible_net_hostname }} is running {{ ansible_net_iostype }} version {{ ansible_net_version }}"
